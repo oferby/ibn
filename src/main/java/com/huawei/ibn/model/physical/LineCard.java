@@ -2,11 +2,14 @@ package com.huawei.ibn.model.physical;
 
 import com.huawei.ibn.model.common.GraphNode;
 import com.huawei.ibn.model.l1.Interface;
+import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public class LineCard extends GraphNode{
+@NodeEntity
+public class LineCard extends GraphNode {
 
     @Relationship(type = "in")
     private Device device;
@@ -28,5 +31,13 @@ public class LineCard extends GraphNode{
 
     public void setInterfaces(Set<Interface> interfaces) {
         this.interfaces = interfaces;
+    }
+
+    public void addInterface(Interface nic) {
+        if (interfaces == null) {
+            interfaces = new HashSet<>();
+        }
+
+        interfaces.add(nic);
     }
 }

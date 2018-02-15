@@ -7,7 +7,10 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+@NodeEntity
 public class Device extends GraphNode {
 
     private String vendor;
@@ -17,7 +20,7 @@ public class Device extends GraphNode {
     private AbstractLocation location;
 
     @Relationship(type = "has")
-    private LineCard lineCard;
+    private Set<LineCard> lineCards;
 
     public String getVendor() {
         return vendor;
@@ -43,12 +46,19 @@ public class Device extends GraphNode {
         this.location = location;
     }
 
-    public LineCard getLineCard() {
-        return lineCard;
+    public Set<LineCard> getLineCards() {
+        return lineCards;
     }
 
-    public void setLineCard(LineCard lineCard) {
-        this.lineCard = lineCard;
+    public void setLineCards(Set<LineCard> lineCards) {
+        this.lineCards = lineCards;
     }
 
+    public void addLineCard(LineCard lineCard){
+        if (lineCards == null){
+            lineCards = new HashSet<>();
+        }
+
+        lineCards.add(lineCard);
+    }
 }

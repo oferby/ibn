@@ -1,5 +1,8 @@
 package com.huawei.ibn.model.l3;
 
+import org.neo4j.ogm.annotation.NodeEntity;
+
+@NodeEntity
 public class V4IpAddress extends IpAddress{
 
     private int address;

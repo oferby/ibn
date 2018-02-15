@@ -11,16 +11,34 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Device extends GraphNode {
+public class Device {
+
+    @GraphId
+    private
+    Long id;
+
+    private String name;
 
     private String vendor;
     private Date uptime;
 
-    @Relationship(type = "in")
+    @Relationship(type = "IN")
     private AbstractLocation location;
 
-    @Relationship(type = "has")
+    @Relationship(type = "HAS")
     private Set<LineCard> lineCards;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getVendor() {
         return vendor;
@@ -54,8 +72,8 @@ public class Device extends GraphNode {
         this.lineCards = lineCards;
     }
 
-    public void addLineCard(LineCard lineCard){
-        if (lineCards == null){
+    public void addLineCard(LineCard lineCard) {
+        if (lineCards == null) {
             lineCards = new HashSet<>();
         }
 

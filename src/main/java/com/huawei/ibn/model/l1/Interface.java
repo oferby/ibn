@@ -8,7 +8,7 @@ import java.security.InvalidParameterException;
 public class Interface extends GraphNode {
 
     private InterfaceType interfaceType;
-    private int bps;
+    private int portSpeed;
     private boolean isUp;
     private boolean isEnabled;
 
@@ -26,12 +26,12 @@ public class Interface extends GraphNode {
         this.interfaceType = interfaceType;
     }
 
-    public int getBps() {
-        return bps;
+    public int getPortSpeed() {
+        return portSpeed;
     }
 
-    public void setBps(int bps) {
-        this.bps = bps;
+    public void setPortSpeed(int portSpeed) {
+        this.portSpeed = portSpeed;
     }
 
     public boolean isUp() {

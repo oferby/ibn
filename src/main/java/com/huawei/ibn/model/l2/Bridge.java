@@ -1,8 +1,6 @@
 package com.huawei.ibn.model.l2;
 
 import com.huawei.ibn.model.common.GraphNode;
-import com.huawei.ibn.model.l1.Interface;
-import com.huawei.ibn.model.physical.LineCard;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
@@ -12,22 +10,41 @@ import java.util.Set;
 @NodeEntity
 public class Bridge extends GraphNode {
 
-    @Relationship(type = "ASSIGN")
-    private Set<Interface> interfaces;
+    @Relationship(type = "CONFIG")
+    private Vlan vlan;
 
-    public void addInterface(Interface nic) {
-        if (interfaces == null) {
-            interfaces = new HashSet<>();
+    @Relationship(type = "CONFIG")
+    private Set<SwitchTableEntry> switchTableEntrySet;
+
+    public Bridge() {
+    }
+
+    public Bridge(Vlan vlan) {
+        this.vlan = vlan;
+    }
+
+    public void addSwithTableEntry(SwitchTableEntry switchTableEntry){
+        if (switchTableEntry==null){
+            switchTableEntrySet  = new HashSet<>();
         }
 
-        interfaces.add(nic);
+        switchTableEntrySet.add(switchTableEntry);
     }
 
-    public Set<Interface> getInterfaces() {
-        return interfaces;
+    public Set<SwitchTableEntry> getSwitchTableEntrySet() {
+        return switchTableEntrySet;
     }
 
-    public void setInterfaces(Set<Interface> interfaces) {
-        this.interfaces = interfaces;
+    public void setSwitchTableEntrySet(Set<SwitchTableEntry> switchTableEntrySet) {
+        this.switchTableEntrySet = switchTableEntrySet;
     }
+
+    public Vlan getVlan() {
+        return vlan;
+    }
+
+    public void setVlan(Vlan vlan) {
+        this.vlan = vlan;
+    }
+
 }

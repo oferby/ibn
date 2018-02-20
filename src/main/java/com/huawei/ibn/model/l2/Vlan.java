@@ -1,16 +1,18 @@
 package com.huawei.ibn.model.l2;
 
-import com.huawei.ibn.model.l1.EthernetInterface;
-import com.huawei.ibn.model.l1.Interface;
+import com.huawei.ibn.model.common.GraphNode;
 
 import java.security.InvalidParameterException;
 
-public class VlanInterface extends EthernetInterface {
+public class Vlan extends GraphNode{
 
     private short vlanId;
 
-    public VlanInterface() {
-        super();
+    public Vlan() {
+    }
+
+    public Vlan(short vlanId) {
+        this.vlanId = vlanId;
     }
 
     public short getVlanId() {

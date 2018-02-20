@@ -4,7 +4,8 @@ import com.huawei.ibn.model.controller.DeviceController;
 import com.huawei.ibn.model.controller.EthernetController;
 import com.huawei.ibn.model.l1.EthernetInterface;
 import com.huawei.ibn.model.l1.Interface;
-import com.huawei.ibn.model.l2.MacAddress;
+import com.huawei.ibn.model.l1.L1Controller;
+import com.huawei.ibn.model.l2.*;
 import com.huawei.ibn.model.l3.V4IpAddress;
 import com.huawei.ibn.model.physical.Device;
 import com.huawei.ibn.model.physical.LineCard;
@@ -12,6 +13,7 @@ import com.huawei.ibn.model.query.DeviceEthernet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.io.InvalidObjectException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -24,8 +26,15 @@ class DemoConfig {
     @Autowired
     private EthernetController ethernetController;
 
+    @Autowired
+    private L1Controller l1Controller;
+
+    private short vlanId = 1000;
+    private short devNum = 1;
+
     void config() {
         this.doPhysical();
+        this.doDeviceL2();
         this.doL1Connection();
     }
 
@@ -78,33 +87,67 @@ class DemoConfig {
 
     private void doL1Connection() {
 
-        List<EthernetInterface> connected = new ArrayList<>();
-        EthernetInterface e1;
-        EthernetInterface e2;
+        l1Controller.connect("dev2", "eth0", "dev3", "eth0");
+        l1Controller.connect("dev2", "eth1", "dev4", "eth0");
+        l1Controller.connect("dev2", "eth2", "dev5", "eth0");
+
+    }
+
+
+
+    private void doDeviceL2() {
 
         List<DeviceEthernet> deviceEthernetList = ethernetController.findDeviceEthernetInterfaces();
+        List<Device> deviceList = new ArrayList<>();
 
-        DeviceEthernet root = deviceEthernetList.get(0);
-        List<EthernetInterface> rootInterfaces = root.getEthernetInterfaces();
+        for (DeviceEthernet dev : deviceEthernetList) {
+            Device dev2Device = dev.getDevice();
+            Bridge bridge = dev2Device.addNewBridge((short) 0);
 
-        DeviceEthernet dev;
+            for (EthernetInterface e : dev.getEthernetInterfaces()) {
+                e.setPortVlan(new AccessVlan(bridge.getVlan()));
+            }
 
-        for (int i = 0; i < 4; i++) {
-
-            dev = deviceEthernetList.get(i+1);
-            e1 = rootInterfaces.get(i);
-            e2 = dev.getEthernetInterfaces().get(0);
-            e1.setConnected(e2);
-            e2.setConnected(e1);
-            connected.add(e1);
-            connected.add(e2);
+            deviceList.add(dev2Device);
 
         }
 
-        Iterable<EthernetInterface> save = ethernetController.save(connected);
+        deviceController.save(deviceList);
 
-        assert save!=null;
+    }
 
+
+    private Bridge doBridge(short vlanId, Set<EthernetInterface> accessMembers, Set<EthernetInterface> trunkMembers) throws Exception {
+
+        Bridge bridge = new Bridge();
+        Vlan vlan = new Vlan(vlanId);
+        bridge.setVlan(vlan);
+
+        if (accessMembers != null) {
+
+            for (EthernetInterface e : accessMembers) {
+                AccessVlan accessVlan = new AccessVlan(vlan);
+                e.setPortVlan(accessVlan);
+            }
+        }
+
+        if (trunkMembers != null) {
+
+            for (EthernetInterface e : trunkMembers) {
+                PortVlan trunkVlan = e.getPortVlan();
+                if (trunkVlan == null) {
+                    trunkVlan = new TrunkVlan();
+                    e.setPortVlan(trunkVlan);
+                } else if (!(trunkVlan instanceof TrunkVlan)) {
+                    throw new Exception("invalid configuration");
+                }
+                ((TrunkVlan) trunkVlan).addVlanMembership(vlan);
+            }
+
+
+        }
+
+        return bridge;
     }
 
 

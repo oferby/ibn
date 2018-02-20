@@ -1,6 +1,8 @@
 package com.huawei.ibn.model.physical;
 
 import com.huawei.ibn.model.common.GraphNode;
+import com.huawei.ibn.model.l2.Bridge;
+import com.huawei.ibn.model.l2.Vlan;
 import com.huawei.ibn.model.location.AbstractLocation;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -11,13 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Device {
-
-    @GraphId
-    private
-    Long id;
-
-    private String name;
+public class Device extends GraphNode{
 
     private String vendor;
     private Date uptime;
@@ -28,17 +24,8 @@ public class Device {
     @Relationship(type = "HAS")
     private Set<LineCard> lineCards;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Relationship(type = "CONFIG")
+    private Set<Bridge> bridgeSet;
 
     public String getVendor() {
         return vendor;
@@ -78,5 +65,23 @@ public class Device {
         }
 
         lineCards.add(lineCard);
+    }
+
+    public Bridge addNewBridge(short vlanId){
+        if (bridgeSet==null){
+            bridgeSet = new HashSet<>();
+        }
+        Bridge bridge = new Bridge(new Vlan(vlanId));
+        bridgeSet.add(bridge);
+
+        return bridge;
+    }
+
+    public Set<Bridge> getBridgeSet() {
+        return bridgeSet;
+    }
+
+    public void setBridgeSet(Set<Bridge> bridgeSet) {
+        this.bridgeSet = bridgeSet;
     }
 }

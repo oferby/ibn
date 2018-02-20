@@ -4,7 +4,7 @@ import com.huawei.ibn.model.common.GraphNode;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 
-public class IpAddress{
+public class IpAddress extends GraphNode{
 
 
 }

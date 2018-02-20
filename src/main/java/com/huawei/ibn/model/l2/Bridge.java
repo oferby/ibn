@@ -6,15 +6,28 @@ import com.huawei.ibn.model.physical.LineCard;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Bridge extends GraphNode{
+public class Bridge extends GraphNode {
 
-    @Relationship(type = "in")
-    private LineCard lineCard;
-
-    @Relationship(type = "has")
+    @Relationship(type = "ASSIGN")
     private Set<Interface> interfaces;
 
+    public void addInterface(Interface nic) {
+        if (interfaces == null) {
+            interfaces = new HashSet<>();
+        }
+
+        interfaces.add(nic);
+    }
+
+    public Set<Interface> getInterfaces() {
+        return interfaces;
+    }
+
+    public void setInterfaces(Set<Interface> interfaces) {
+        this.interfaces = interfaces;
+    }
 }

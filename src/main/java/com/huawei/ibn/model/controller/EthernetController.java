@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface EthernetController extends GraphRepository<EthernetInterface> {
 
-    @Query("MATCH (d:Device)-[:HAS*]->(e:EthernetInterface) RETURN d as device,COLLECT(e) as EthernetInterfaces")
+    @Query("MATCH (d:Device)-[:HAS*]->(e:EthernetInterface) RETURN d as device,COLLECT(e) as ethernetInterfaces")
     List<DeviceEthernet> findDeviceEthernetInterfaces();
 
 }

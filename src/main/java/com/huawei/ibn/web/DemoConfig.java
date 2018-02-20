@@ -25,7 +25,7 @@ class DemoConfig {
     private EthernetController ethernetController;
 
     void config() {
-//        this.doPhysical();
+        this.doPhysical();
         this.doL1Connection();
     }
 
@@ -88,34 +88,6 @@ class DemoConfig {
         List<EthernetInterface> rootInterfaces = root.getEthernetInterfaces();
 
         DeviceEthernet dev;
-//        = deviceEthernetList.get(1);
-//
-//        e1 = rootInterfaces.get(0);
-//        e2 = dev.getEthernetInterfaces().get(0);
-//        e1.setConnected(e2);
-//        connected.add(e1);
-//        connected.add(e2);
-//
-//        dev = deviceEthernetList.get(1);
-//        e1 = rootInterfaces.get(1);
-//        e2 = dev.getEthernetInterfaces().get(0);
-//        e1.setConnected(e2);
-//        connected.add(e1);
-//        connected.add(e2);
-//
-//        dev = deviceEthernetList.get(2);
-//        e1 = rootInterfaces.get(2);
-//        e2 = dev.getEthernetInterfaces().get(0);
-//        e1.setConnected(e2);
-//        connected.add(e1);
-//        connected.add(e2);
-//
-//        dev = deviceEthernetList.get(3);
-//        e1 = rootInterfaces.get(3);
-//        e2 = dev.getEthernetInterfaces().get(0);
-//        e1.setConnected(e2);
-//        connected.add(e1);
-//        connected.add(e2);
 
         for (int i = 0; i < 4; i++) {
 

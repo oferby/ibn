@@ -2,6 +2,7 @@ package com.huawei.ibn.web;
 
 import com.huawei.ibn.model.controller.DeviceController;
 import com.huawei.ibn.model.controller.EthernetController;
+import com.huawei.ibn.model.controller.GraphNodeController;
 import com.huawei.ibn.model.l1.EthernetInterface;
 import com.huawei.ibn.model.l1.Interface;
 import com.huawei.ibn.model.l1.L1Controller;
@@ -13,7 +14,6 @@ import com.huawei.ibn.model.query.DeviceEthernet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.io.InvalidObjectException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -29,13 +29,23 @@ class DemoConfig {
     @Autowired
     private L1Controller l1Controller;
 
+    @Autowired
+    private L2Controller l2Controller;
+
+    @Autowired
+    private GraphNodeController graphNodeController;
+
     private short vlanId = 1000;
     private short devNum = 1;
 
     void config() {
+
+        graphNodeController.deleteAll();
+
         this.doPhysical();
         this.doDeviceL2();
         this.doL1Connection();
+//        l2Controller.setTrunkVlan("dev2", "eth3", (short) 10);
     }
 
     private void doPhysical() {
@@ -102,10 +112,10 @@ class DemoConfig {
 
         for (DeviceEthernet dev : deviceEthernetList) {
             Device dev2Device = dev.getDevice();
-            Bridge bridge = dev2Device.addNewBridge((short) 0);
+            Switch aSwitch = dev2Device.addNewBridge((short) 0);
 
             for (EthernetInterface e : dev.getEthernetInterfaces()) {
-                e.setPortVlan(new AccessVlan(bridge.getVlan()));
+                e.setPortVlan(new AccessVlan(aSwitch.getVlan()));
             }
 
             deviceList.add(dev2Device);
@@ -117,11 +127,11 @@ class DemoConfig {
     }
 
 
-    private Bridge doBridge(short vlanId, Set<EthernetInterface> accessMembers, Set<EthernetInterface> trunkMembers) throws Exception {
+    private Switch doBridge(short vlanId, Set<EthernetInterface> accessMembers, Set<EthernetInterface> trunkMembers) throws Exception {
 
-        Bridge bridge = new Bridge();
+        Switch aSwitch = new Switch();
         Vlan vlan = new Vlan(vlanId);
-        bridge.setVlan(vlan);
+        aSwitch.setVlan(vlan);
 
         if (accessMembers != null) {
 
@@ -147,7 +157,7 @@ class DemoConfig {
 
         }
 
-        return bridge;
+        return aSwitch;
     }
 
 

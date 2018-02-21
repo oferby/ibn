@@ -13,5 +13,7 @@ public interface DeviceController extends GraphRepository<Device> {
 
     Device findByName(String name);
 
+    Device findByName(String name, @Depth int depth);
+
 
 }

@@ -7,10 +7,10 @@ import java.util.Set;
 
 public class TrunkVlan extends PortVlan {
 
-    @Relationship(type = "L2_CONFIG")
+    @Relationship(type = "L2_PATH")
     private Set<Vlan> vlanSet;
 
-    @Relationship(type = "L2_CONFIG")
+    @Relationship(type = "L2_PATH")
     private Vlan nativeVlan;
 
     public Vlan getNativeVlan() {
@@ -27,7 +27,6 @@ public class TrunkVlan extends PortVlan {
         }
 
     }
-
 
     public Set<Vlan> getVlanSet() {
         return vlanSet;

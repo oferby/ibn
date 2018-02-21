@@ -1,10 +1,10 @@
 package com.huawei.ibn.model.physical;
 
 import com.huawei.ibn.model.common.GraphNode;
-import com.huawei.ibn.model.l2.Bridge;
+import com.huawei.ibn.model.l1.Interface;
+import com.huawei.ibn.model.l2.Switch;
 import com.huawei.ibn.model.l2.Vlan;
 import com.huawei.ibn.model.location.AbstractLocation;
-import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Device extends GraphNode{
+public class Device extends GraphNode {
 
     private String vendor;
     private Date uptime;
@@ -24,8 +24,11 @@ public class Device extends GraphNode{
     @Relationship(type = "HAS")
     private Set<LineCard> lineCards;
 
+    @Relationship(type = "HAS")
+    private Set<Interface> interfaceSet;
+
     @Relationship(type = "CONFIG")
-    private Set<Bridge> bridgeSet;
+    private Set<Switch> switchSet;
 
     public String getVendor() {
         return vendor;
@@ -67,21 +70,36 @@ public class Device extends GraphNode{
         lineCards.add(lineCard);
     }
 
-    public Bridge addNewBridge(short vlanId){
-        if (bridgeSet==null){
-            bridgeSet = new HashSet<>();
+    public void addInterface(Interface anInterface) {
+        if (interfaceSet == null) {
+            interfaceSet = new HashSet<>();
         }
-        Bridge bridge = new Bridge(new Vlan(vlanId));
-        bridgeSet.add(bridge);
-
-        return bridge;
+        interfaceSet.add(anInterface);
     }
 
-    public Set<Bridge> getBridgeSet() {
-        return bridgeSet;
+    public Set<Interface> getInterfaceSet() {
+        return interfaceSet;
     }
 
-    public void setBridgeSet(Set<Bridge> bridgeSet) {
-        this.bridgeSet = bridgeSet;
+    public void setInterfaceSet(Set<Interface> interfaceSet) {
+        this.interfaceSet = interfaceSet;
+    }
+
+    public Switch addNewBridge(short vlanId) {
+        if (switchSet == null) {
+            switchSet = new HashSet<>();
+        }
+        Switch aSwitch = new Switch(new Vlan(vlanId));
+        switchSet.add(aSwitch);
+
+        return aSwitch;
+    }
+
+    public Set<Switch> getSwitchSet() {
+        return switchSet;
+    }
+
+    public void setSwitchSet(Set<Switch> switchSet) {
+        this.switchSet = switchSet;
     }
 }

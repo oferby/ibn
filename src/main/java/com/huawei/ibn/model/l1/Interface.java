@@ -5,7 +5,7 @@ import org.neo4j.ogm.annotation.Relationship;
 
 import java.security.InvalidParameterException;
 
-public class Interface extends GraphNode {
+public abstract class Interface extends GraphNode {
 
     private InterfaceType interfaceType;
     private int portSpeed;

@@ -19,9 +19,6 @@ public class DeviceWebController {
     @Autowired
     private LineCardController lineCardController;
 
-    @Autowired
-    private DemoConfig demoConfig;
-
     @RequestMapping(value = "/device", method = RequestMethod.GET)
     @ResponseBody
     Iterable<Device> getAllDevices() {
@@ -42,13 +39,4 @@ public class DeviceWebController {
         return new ResponseEntity<Device>(save, HttpStatus.OK);
     }
 
-
-    @RequestMapping(value = "/do", method = RequestMethod.GET)
-    @ResponseStatus
-    ResponseEntity<Device> doInternaly() {
-
-        demoConfig.config();
-
-        return new ResponseEntity<Device>(HttpStatus.OK);
-    }
 }

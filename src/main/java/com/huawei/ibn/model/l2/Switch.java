@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NodeEntity
-public class Bridge extends GraphNode {
+public class Switch extends GraphNode {
 
     @Relationship(type = "CONFIG")
     private Vlan vlan;
@@ -16,10 +16,10 @@ public class Bridge extends GraphNode {
     @Relationship(type = "CONFIG")
     private Set<SwitchTableEntry> switchTableEntrySet;
 
-    public Bridge() {
+    public Switch() {
     }
 
-    public Bridge(Vlan vlan) {
+    public Switch(Vlan vlan) {
         this.vlan = vlan;
     }
 

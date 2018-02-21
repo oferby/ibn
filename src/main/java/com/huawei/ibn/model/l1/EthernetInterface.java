@@ -18,7 +18,7 @@ public class EthernetInterface extends Interface {
     @Relationship(type = "CONFIG")
     private MacAddress macAddress;
 
-    @Relationship(type = "L2_CONFIG")
+    @Relationship(type = "L2_PATH")
     private PortVlan portVlan;
 
     @Relationship(type = "CONFIG")

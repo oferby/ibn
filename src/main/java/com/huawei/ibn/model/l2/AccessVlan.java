@@ -4,7 +4,7 @@ import org.neo4j.ogm.annotation.Relationship;
 
 public class AccessVlan extends PortVlan{
 
-    @Relationship(type = "L2_CONFIG")
+    @Relationship(type = "L2_PATH")
     private Vlan vlan;
 
     public AccessVlan() {

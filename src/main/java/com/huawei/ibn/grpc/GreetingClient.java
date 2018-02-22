@@ -10,7 +10,7 @@ public class GreetingClient {
 
     public static void main(String[] args) {
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8081)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6565)
                 .usePlaintext(true)
                 .build();
 

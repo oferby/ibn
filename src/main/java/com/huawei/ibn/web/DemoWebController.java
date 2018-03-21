@@ -1,5 +1,6 @@
 package com.huawei.ibn.web;
 
+import com.huawei.ibn.aws.AwsManagerImpl;
 import com.huawei.ibn.model.cli.Word;
 import com.huawei.ibn.model.controller.DeviceController;
 import com.huawei.ibn.model.controller.LineCardController;
@@ -34,6 +35,10 @@ public class DemoWebController {
     @Autowired
     private WordController wordController;
 
+    @Autowired
+    private AwsManagerImpl awsManager;
+
+
     @RequestMapping(value = "/do", method = RequestMethod.GET)
     @ResponseStatus
     ResponseEntity<Device> doInternaly() {
@@ -45,11 +50,11 @@ public class DemoWebController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseStatus
-    ResponseEntity<String> test(){
+    ResponseEntity<String> test() {
 
         boolean path = pathController.l2PathExists(350, 318);
 
-        return new ResponseEntity(path == true ? "Yes" : "No", HttpStatus.OK);
+        return new ResponseEntity<>(path == true ? "Yes" : "No", HttpStatus.OK);
 
     }
 
@@ -97,6 +102,16 @@ public class DemoWebController {
         word.getNextWords().forEach(w -> nextWords.add(w.getText()));
 
         return new ResponseEntity<>(new ArrayList<>(nextWords), HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/sync", method = RequestMethod.GET)
+    @ResponseStatus
+    public ResponseEntity<List<String>> syncGraphWithAws() {
+
+        List<String> vpcs = awsManager.syncWithAws();
+
+        return new ResponseEntity<>(vpcs, HttpStatus.OK);
 
     }
 

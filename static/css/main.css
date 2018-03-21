@@ -1,0 +1,21 @@
+.left-vertical {
+
+
+}
+
+.right-vertical {
+
+
+}
+
+#text-div {
+    background-color: grey;
+
+}
+
+#text-input {
+     position: absolute;
+     bottom: 0;
+     width: 95%;
+     margin: 3px;
+}

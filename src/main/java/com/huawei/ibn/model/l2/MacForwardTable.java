@@ -1,6 +1,8 @@
 package com.huawei.ibn.model.l2;
 
-public class MacForwardTable {
+import com.huawei.ibn.model.common.GraphNode;
+
+public class MacForwardTable extends GraphNode{
 
 
 

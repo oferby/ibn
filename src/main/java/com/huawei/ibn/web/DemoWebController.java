@@ -35,10 +35,6 @@ public class DemoWebController {
     @Autowired
     private WordController wordController;
 
-    @Autowired
-    private AwsManagerImpl awsManager;
-
-
     @RequestMapping(value = "/do", method = RequestMethod.GET)
     @ResponseStatus
     ResponseEntity<Device> doInternaly() {
@@ -102,16 +98,6 @@ public class DemoWebController {
         word.getNextWords().forEach(w -> nextWords.add(w.getText()));
 
         return new ResponseEntity<>(new ArrayList<>(nextWords), HttpStatus.OK);
-
-    }
-
-    @RequestMapping(value = "/sync", method = RequestMethod.GET)
-    @ResponseStatus
-    public ResponseEntity<List<String>> syncGraphWithAws() {
-
-        List<String> vpcs = awsManager.syncWithAws();
-
-        return new ResponseEntity<>(vpcs, HttpStatus.OK);
 
     }
 

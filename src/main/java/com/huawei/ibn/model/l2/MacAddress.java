@@ -7,28 +7,10 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import java.security.InvalidParameterException;
 
 @NodeEntity
-public class MacAddress {
-
-    @GraphId
-    private
-    Long id;
-
-    private String name;
+public class MacAddress extends GraphNode {
 
     private byte[] address;
     private String stringAddress;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public byte[] getAddress() {
         return address;

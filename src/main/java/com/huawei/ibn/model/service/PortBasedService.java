@@ -6,7 +6,7 @@ import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.Set;
 
-public class SimpleService extends GraphNode{
+public class PortBasedService extends GraphNode{
 
     @Relationship(type = "BOUND")
     private Port port;

@@ -8,9 +8,14 @@ import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeVpcsResult;
 import com.amazonaws.services.ec2.model.Vpc;
+import com.huawei.ibn.model.controller.GraphNodeController;
+import com.huawei.ibn.model.controller.VpcController;
+import com.huawei.ibn.model.l3.CidrBlock;
+import com.huawei.ibn.model.l3.VirtualPrivateNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.EventRecodingLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
@@ -20,35 +25,47 @@ import java.util.List;
 @Controller
 public class AwsManagerImpl {
 
-    private AWSCredentialsProvider awsCredentialsProvider;
-
     private static final Logger logger = LoggerFactory.getLogger(AwsManagerImpl.class);
 
-    public AwsManagerImpl(@Value("${aws.access_key_id}") String accessKey, @Value("${aws.secret_key_id}") String secretKey) {
+    @Autowired
+    private Ec2ManagerImpl ec2Manager;
 
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
-        awsCredentialsProvider = new AWSStaticCredentialsProvider(awsCreds);
-    }
+    @Autowired
+    private VpcController vpcController;
+
+    @Autowired
+    private GraphNodeController graphNodeController;
 
     public List<String> syncWithAws() {
 
-        AmazonEC2 amazonEC2 = AmazonEC2ClientBuilder.standard()
-                .withCredentials(awsCredentialsProvider)
-                .withRegion(Regions.SA_EAST_1)
-                .build();
+        graphNodeController.deleteAll();
 
-        DescribeVpcsResult vpcsResult = amazonEC2.describeVpcs();
+        List<Vpc> vpcList = new ArrayList<>();
 
-        List<Vpc> vpcs = vpcsResult.getVpcs();
+        for (Regions region : Regions.values()) {
+            try {
+                vpcList.addAll(ec2Manager.getVpcList(region));
+            } catch (Exception ignored) {
+            }
 
-        assert vpcs != null;
-
-        logger.debug(vpcs.toString());
+        }
 
         List<String> result = new ArrayList<>();
-        for (Vpc vpc : vpcs) {
+        List<VirtualPrivateNetwork>vpcNodeList = new ArrayList<>();
+        VirtualPrivateNetwork vpcNode;
+        for (Vpc vpc : vpcList) {
             result.add(vpc.toString());
+
+            vpcNode = new VirtualPrivateNetwork();
+            vpcNode.setName(vpc.getVpcId());
+            CidrBlock cidrBlock = new CidrBlock();
+            cidrBlock.setCidr(vpc.getCidrBlock());
+            vpcNode.addCidr(cidrBlock);
+
+            vpcNodeList.add(vpcNode);
         }
+
+        vpcController.save(vpcNodeList);
 
         return result;
 

@@ -5,5 +5,6 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 
 public interface VpcController extends GraphRepository<VirtualPrivateNetwork>{
 
+    VirtualPrivateNetwork findByName(String name);
 
 }

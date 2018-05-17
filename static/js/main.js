@@ -12,8 +12,8 @@ function connect() {
         stompClient.subscribe('/topic/intent', function (hint) {
             var res = JSON.parse(hint.body);
 //            if (res.status == 'DONE') {
-//                sendIntent(res);
 //            }
+
             addBotResponse(res.hint);
 
         });
@@ -47,11 +47,6 @@ function addBotResponse(text){
 }
 
 $(document).ready( function(){
-
-//    $('.click').click(function(){
-//        $('#modal').show();
-////        $('#modal').draggable();
-//    });
 
     connect();
 

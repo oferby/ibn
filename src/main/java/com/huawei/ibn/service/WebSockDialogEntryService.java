@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class WebSockServiceImpl implements DialogEntryService{
+public class WebSockDialogEntryService implements DialogEntryService{
 
     @Autowired
     private DialogEngine dialogEngine;

@@ -1,9 +1,10 @@
 package com.huawei.ibn.nlu;
 
-import com.huawei.ibn.nlu.intent.Intent;
+
+import com.huawei.ibn.nlu.intent.IntentMessage;
 
 public interface NLUEngine {
 
-    Intent getIntent(Intent intent);
+    IntentMessage getIntent(IntentMessage intent);
 
 }

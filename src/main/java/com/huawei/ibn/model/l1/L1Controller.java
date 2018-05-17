@@ -25,7 +25,7 @@ public class L1Controller {
         nic1.setConnected(nic2);
         nic2.setConnected(nic1);
 
-        ethernetController.save(new HashSet<>(Arrays.asList(nic1, nic2)));
+        ethernetController.saveAll(new HashSet<>(Arrays.asList(nic1, nic2)));
 
     }
 

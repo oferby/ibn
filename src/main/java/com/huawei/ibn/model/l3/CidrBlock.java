@@ -5,28 +5,25 @@ import org.apache.commons.net.util.SubnetUtils;
 
 public class CidrBlock extends GraphNode{
 
-    private String cidr;
+    private SubnetUtils utils;
 
     public CidrBlock() {
     }
 
     public CidrBlock(String cidr) {
-        this.cidr = cidr;
+        this.utils = new SubnetUtils(cidr);
     }
 
     public String getCidr() {
-        return cidr;
+        return utils.getInfo().getCidrSignature();
     }
 
     public void setCidr(String cidr) {
-        this.cidr = cidr;
+        this.utils = new SubnetUtils(cidr);
     }
 
     public boolean isInRange(String ipAddress) {
-
-        SubnetUtils utils = new SubnetUtils(cidr);
         return utils.getInfo().isInRange(ipAddress);
-
     }
 
 }

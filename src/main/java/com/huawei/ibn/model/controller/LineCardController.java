@@ -1,10 +1,9 @@
 package com.huawei.ibn.model.controller;
 
 import com.huawei.ibn.model.physical.LineCard;
-import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface LineCardController extends GraphRepository<LineCard> {
-
+public interface LineCardController extends Neo4jRepository<LineCard, Long> {
 
 
 }

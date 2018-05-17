@@ -9,6 +9,9 @@ import java.util.Set;
 
 public class Subnet extends GraphNode{
 
+    @Relationship(type = "ATTACH_TO")
+    private VirtualPrivateNetwork vpc;
+
     @Relationship(type = "CONFIG")
     private CidrBlock networkAddress;
 
@@ -17,6 +20,17 @@ public class Subnet extends GraphNode{
 
     @Relationship(type = "CONFIG")
     private AccessControl accessControl;
+
+    @Relationship(type = "ASSOCIATED_TO")
+    private RoutingTable routingTable;
+
+    public VirtualPrivateNetwork getVpc() {
+        return vpc;
+    }
+
+    public void setVpc(VirtualPrivateNetwork vpc) {
+        this.vpc = vpc;
+    }
 
     public CidrBlock getNetworkAddress() {
         return networkAddress;
@@ -48,5 +62,13 @@ public class Subnet extends GraphNode{
 
     public void setAccessControlList(AccessControl accessControlList) {
         this.accessControl = accessControl;
+    }
+
+    public RoutingTable getRoutingTable() {
+        return routingTable;
+    }
+
+    public void setRoutingTable(RoutingTable routingTable) {
+        this.routingTable = routingTable;
     }
 }

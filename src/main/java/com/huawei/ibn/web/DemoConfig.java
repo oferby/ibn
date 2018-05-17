@@ -91,7 +91,7 @@ class DemoConfig {
 
         }
 
-        deviceController.save(deviceList);
+        deviceController.saveAll(deviceList);
 
     }
 
@@ -122,7 +122,7 @@ class DemoConfig {
 
         }
 
-        deviceController.save(deviceList);
+        deviceController.saveAll(deviceList);
 
     }
 

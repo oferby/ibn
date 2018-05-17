@@ -8,7 +8,7 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@GRpcService
+//@GRpcService
 public class CliServiceImpl extends CliServiceGrpc.CliServiceImplBase{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

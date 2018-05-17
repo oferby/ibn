@@ -24,8 +24,8 @@ public class VirtualRouter extends GraphNode {
         this.routingTableSet = routingTableSet;
     }
 
-    public void addRoutingTable(RoutingTable routingTable){
-        if (routingTableSet == null){
+    public void addRoutingTable(RoutingTable routingTable) {
+        if (routingTableSet == null) {
             routingTableSet = new HashSet<>();
         }
 
@@ -41,7 +41,7 @@ public class VirtualRouter extends GraphNode {
         this.interfaceSet = interfaceSet;
     }
 
-    public void addEthernetInterface(EthernetInterface ethernetInterface){
+    public void addEthernetInterface(EthernetInterface ethernetInterface) {
         if (interfaceSet == null) {
             interfaceSet = new HashSet<>();
         }

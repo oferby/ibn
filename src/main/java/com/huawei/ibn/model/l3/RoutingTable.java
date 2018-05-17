@@ -8,8 +8,29 @@ import java.util.Set;
 
 public class RoutingTable extends GraphNode {
 
+    private boolean isMain;
+
+    @Relationship(type = "ATTACH_TO")
+    private VirtualPrivateNetwork vpc;
+
     @Relationship(type = "ROUTE")
     private Set<AbstractRoute> routes;
+
+    public boolean isMain() {
+        return isMain;
+    }
+
+    public void setMain(boolean main) {
+        isMain = main;
+    }
+
+    public VirtualPrivateNetwork getVpc() {
+        return vpc;
+    }
+
+    public void setVpc(VirtualPrivateNetwork vpc) {
+        this.vpc = vpc;
+    }
 
     public Set<AbstractRoute> getRoutes() {
         return routes;

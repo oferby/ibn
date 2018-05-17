@@ -7,13 +7,13 @@ import org.neo4j.ogm.annotation.Relationship;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SecurityGroupNode extends GraphNode{
+public class SecurityGroupNode extends GraphNode {
 
-    @Relationship(type = "ATTACH")
+    @Relationship(type = "ATTACH_TO")
     private VirtualPrivateNetwork vpc;
 
     @Relationship(type = "RULE")
-    private Set<AccessControlRule>accessControlRules;
+    private Set<SecurityGroupRuleNode> securityGroupRuleNodes;
 
     public VirtualPrivateNetwork getVpc() {
         return vpc;
@@ -23,19 +23,20 @@ public class SecurityGroupNode extends GraphNode{
         this.vpc = vpc;
     }
 
-    public Set<AccessControlRule> getAccessControlRules() {
-        return accessControlRules;
+    public Set<SecurityGroupRuleNode> getSecurityGroupRuleNodes() {
+        return securityGroupRuleNodes;
     }
 
-    public void setAccessControlRules(Set<AccessControlRule> accessControlRules) {
-        this.accessControlRules = accessControlRules;
+    public void setSecurityGroupRuleNodes(Set<SecurityGroupRuleNode> securityGroupRuleNodes) {
+        this.securityGroupRuleNodes = securityGroupRuleNodes;
     }
 
-    public void addRule(AccessControlRule rule){
-        if (accessControlRules==null){
-            accessControlRules = new HashSet<>();
+    public void addRule(SecurityGroupRuleNode rule) {
+        if (securityGroupRuleNodes == null) {
+            securityGroupRuleNodes = new HashSet<>();
         }
 
-        accessControlRules.add(rule);
+        securityGroupRuleNodes.add(rule);
     }
+
 }

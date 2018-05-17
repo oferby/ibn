@@ -7,11 +7,14 @@ import com.test.tutorial.HelloRequest;
 import com.test.tutorial.HelloResponse;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@GRpcService
+//@GRpcService
 public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImplBase {
 
+    private static final Logger logger = LoggerFactory.getLogger(GreetingServiceImpl.class);
 
     @Autowired
     private DeviceController deviceController;
@@ -20,9 +23,9 @@ public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImpl
     @Override
     public void greeting(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
 
-        Device device = deviceController.findAll().iterator().next();
+//        Device device = deviceController.findAll().iterator().next();
         HelloResponse helloResponse = HelloResponse.newBuilder()
-                .setResponse("found device: " + device.getName())
+                .setResponse("Hellow from server")
                 .build();
 
         responseObserver.onNext(helloResponse);

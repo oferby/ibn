@@ -2,16 +2,13 @@ package com.huawei.ibn.aws;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.model.*;
-import com.amazonaws.services.ec2.model.Subnet;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.huawei.ibn.model.acl.AccessControl;
-import com.huawei.ibn.model.acl.AccessControlRule;
-import com.huawei.ibn.model.acl.AccessControlType;
-import com.huawei.ibn.model.acl.SecurityGroupNode;
+import com.huawei.ibn.cloud.CloudController;
+import com.huawei.ibn.model.acl.*;
 import com.huawei.ibn.model.controller.*;
 import com.huawei.ibn.model.l1.EthernetInterface;
 import com.huawei.ibn.model.l3.*;
 import com.huawei.ibn.model.l3.CidrBlock;
+import com.huawei.ibn.model.location.Region;
 import com.huawei.ibn.model.service.InternetGatwayNode;
 import com.huawei.ibn.model.service.InternetNode;
 import com.huawei.ibn.model.virtual.ComputeNode;
@@ -26,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-public class AwsManagerImpl {
+public class AwsManagerImpl implements CloudController {
 
     private static final Logger logger = LoggerFactory.getLogger(AwsManagerImpl.class);
 
@@ -48,17 +45,44 @@ public class AwsManagerImpl {
     @Autowired
     private VirtualRouterController virtualRouterController;
 
-    public List<String> syncWithAws() {
+    @Autowired
+    private SecurityGroupController securityGroupController;
+
+
+    @Override
+    public void sync() {
 
         graphNodeController.deleteAll();
 
-        Regions region = Regions.US_EAST_1;
+        for (Regions region : Regions.values()) {
 
-        this.addVpcs(region);
+            try {
+
+                doAll(region);
+
+            } catch (Exception ignored) {
+            }
+        }
+
+//        doAll(Regions.US_WEST_1);
+
+    }
+
+
+    private void doAll(Regions region) {
+
+        Region awsRegion = new Region();
+        awsRegion.setName(region.getName());
+
+        this.addAviaAvailabilityZones(region, awsRegion);
+
+        this.addVpcs(region, awsRegion);
 
         this.addInternetGateways(region);
 
         this.addSecurityGroups(region);
+
+        this.addSecurityGroupRules(region);
 
         this.addSubnets(region);
 
@@ -68,17 +92,31 @@ public class AwsManagerImpl {
 
         this.addInstances(region);
 
-        List<String> result = new ArrayList<>();
-        result.add("Done.");
-        return result;
+        graphNodeController.save(awsRegion);
+    }
+
+    private void addAviaAvailabilityZones(Regions region, Region awsRegion) {
+
+        List<AvailabilityZone> availabilityZones = ec2Manager.getAvailabilityZones(region);
+
+        Set<com.huawei.ibn.model.location.AvailabilityZone> zones = new HashSet<>();
+
+        for (AvailabilityZone availabilityZone : availabilityZones) {
+
+            com.huawei.ibn.model.location.AvailabilityZone zone = new com.huawei.ibn.model.location.AvailabilityZone();
+            zone.setName(availabilityZone.getZoneName());
+            zones.add(zone);
+        }
+
+        awsRegion.setAvailabilityZones(zones);
 
     }
 
-    private void addVpcs(Regions regions) {
+    private void addVpcs(Regions region, Region awsRegion) {
 
         List<Vpc> vpcList = new ArrayList<>();
 
-        vpcList.addAll(ec2Manager.getRegionVpcList(regions));
+        vpcList.addAll(ec2Manager.getRegionVpcList(region));
 
         List<VirtualPrivateNetwork> vpcNodeList = new ArrayList<>();
         VirtualPrivateNetwork vpcNode;
@@ -92,7 +130,9 @@ public class AwsManagerImpl {
             vpcNodeList.add(vpcNode);
         }
 
-        vpcController.save(vpcNodeList);
+        vpcController.saveAll(vpcNodeList);
+
+        awsRegion.addAll(vpcNodeList);
 
     }
 
@@ -120,7 +160,7 @@ public class AwsManagerImpl {
             gatwayNodes.add(node);
 
         }
-        graphNodeController.save(gatwayNodes);
+        graphNodeController.saveAll(gatwayNodes);
     }
 
 
@@ -137,12 +177,13 @@ public class AwsManagerImpl {
             subnetNode.setNetworkAddress(new CidrBlock(subnet.getCidrBlock()));
             String vpcId = subnet.getVpcId();
             VirtualPrivateNetwork vpc = vpcController.findByName(vpcId);
-            vpc.addSubnet(subnetNode);
+            subnetNode.setVpc(vpc);
             vpcList.add(vpc);
+            subnets.add(subnetNode);
 
         }
 
-        vpcController.save(vpcList);
+        graphNodeController.saveAll(subnets);
 
     }
 
@@ -192,17 +233,17 @@ public class AwsManagerImpl {
 
                 }
 
-                graphNodeController.save(subnets);
+                graphNodeController.saveAll(subnets);
 
             }
 
             VirtualPrivateNetwork vpc = vpcController.findByName(networkAcl.getVpcId());
-            vpc.addAccessControl(accessControl);
+            accessControl.setVpc(vpc);
             vpcList.add(vpc);
 
         }
 
-        vpcController.save(vpcList);
+        vpcController.saveAll(vpcList);
 
     }
 
@@ -210,33 +251,31 @@ public class AwsManagerImpl {
 
         List<RouteTable> routeTables = ec2Manager.getRegionRouteTables(region);
 
+        List<RoutingTable> routingTables = new ArrayList<>();
         for (RouteTable routeTable : routeTables) {
 
-            String vpcId = routeTable.getVpcId();
-            VirtualRouter virtualRouter = virtualRouterController.findByName("rtr-" + vpcId);
-            if (virtualRouter == null) {
-                virtualRouter = new VirtualRouter();
-                virtualRouter.setName("rtr-" + vpcId);
-            }
-
             RoutingTable routingTable = new RoutingTable();
+            routingTables.add(routingTable);
             routingTable.setName(routeTable.getRouteTableId());
-            virtualRouter.addRoutingTable(routingTable);
+
+            String vpcId = routeTable.getVpcId();
+            VirtualPrivateNetwork vpc = vpcController.findByName(vpcId);
+            routingTable.setVpc(vpc);
 
             List<com.huawei.ibn.model.l3.Subnet> subnets = new ArrayList<>();
             for (RouteTableAssociation routeTableAssociation : routeTable.getAssociations()) {
 
-                String subnetId = routeTableAssociation.getSubnetId();
+                routingTable.setMain(routeTableAssociation.getMain());
 
+                String subnetId = routeTableAssociation.getSubnetId();
                 if (subnetId == null) {
                     continue;
                 }
-
                 com.huawei.ibn.model.l3.Subnet subnet = subnetController.findByName(subnetId);
+                subnet.setRoutingTable(routingTable);
                 EthernetInterface eth = new EthernetInterface();
                 V4IpAddress ipAddress = new V4IpAddress();
                 eth.setIpAddress(ipAddress);
-                virtualRouter.addEthernetInterface(eth);
                 LocalRoute localRoute = new LocalRoute();
                 localRoute.setIpAddress(ipAddress);
                 routingTable.addRoute(localRoute);
@@ -245,14 +284,18 @@ public class AwsManagerImpl {
 
             }
 
-            graphNodeController.save(subnets);
-
-            virtualRouterController.save(virtualRouter);
+            graphNodeController.saveAll(subnets);
 
         }
 
+        graphNodeController.saveAll(routingTables);
+
     }
 
+    private void addOrphanSubnets(Regions region) {
+
+
+    }
 
     private void addSecurityGroups(Regions region) {
         List<SecurityGroup> securityGroups = ec2Manager.getRegionSecurityGroup(region);
@@ -265,12 +308,62 @@ public class AwsManagerImpl {
             VirtualPrivateNetwork vpc = vpcController.findByName(securityGroup.getVpcId());
             node.setVpc(vpc);
 
+            groupNodes.add(node);
+
+        }
+
+        graphNodeController.saveAll(groupNodes);
+
+    }
+
+    private void addSecurityGroupRules(Regions region) {
+
+        List<SecurityGroup> securityGroups = ec2Manager.getRegionSecurityGroup(region);
+        List<SecurityGroupNode> groupNodes = new ArrayList<>();
+        for (SecurityGroup securityGroup : securityGroups) {
+
+            SecurityGroupNode node = securityGroupController.findByName(securityGroup.getGroupId());
+
             for (IpPermission ipPermission : securityGroup.getIpPermissions()) {
 
+                SecurityGroupRuleNode rule = new SecurityGroupRuleNode();
+                rule.setType(AccessControlType.INBOUND);
+                rule.setIpProtocol(ipPermission.getIpProtocol());
+                rule.setFromPort(ipPermission.getFromPort());
+                rule.setToPort(ipPermission.getToPort());
+
+                for (IpRange ipRange : ipPermission.getIpv4Ranges()) {
+                    CidrBlock cidrBlock = new CidrBlock(ipRange.getCidrIp());
+                    rule.addCidr(cidrBlock);
+                }
+
+                for (UserIdGroupPair userIdGroupPair : ipPermission.getUserIdGroupPairs()) {
+                    SecurityGroupNode securityGroupNode = securityGroupController.findByName(userIdGroupPair.getGroupId());
+                    rule.addSecurityGroupNode(securityGroupNode);
+                }
+
+                node.addRule(rule);
             }
 
             for (IpPermission ipPermission : securityGroup.getIpPermissionsEgress()) {
 
+                SecurityGroupRuleNode rule = new SecurityGroupRuleNode();
+                rule.setType(AccessControlType.OUTBOUND);
+                rule.setIpProtocol(ipPermission.getIpProtocol());
+                rule.setFromPort(ipPermission.getFromPort());
+                rule.setToPort(ipPermission.getToPort());
+
+                for (IpRange ipRange : ipPermission.getIpv4Ranges()) {
+                    CidrBlock cidrBlock = new CidrBlock(ipRange.getCidrIp());
+                    rule.addCidr(cidrBlock);
+                }
+
+                for (UserIdGroupPair userIdGroupPair : ipPermission.getUserIdGroupPairs()) {
+                    SecurityGroupNode securityGroupNode = securityGroupController.findByName(userIdGroupPair.getGroupId());
+                    rule.addSecurityGroupNode(securityGroupNode);
+                }
+
+                node.addRule(rule);
 
             }
 
@@ -278,15 +371,17 @@ public class AwsManagerImpl {
 
         }
 
-        graphNodeController.save(groupNodes);
+
+        graphNodeController.saveAll(groupNodes);
 
     }
+
 
     private void addInstances(Regions region) {
 
         List<Instance> instances = ec2Manager.getRegionInstances(region);
 
-        List<com.huawei.ibn.model.l3.Subnet>subnets= new ArrayList<>();
+        List<com.huawei.ibn.model.l3.Subnet> subnets = new ArrayList<>();
         Set<ComputeNode> computeNodes = new HashSet<>();
         for (Instance instance : instances) {
 
@@ -309,8 +404,8 @@ public class AwsManagerImpl {
             }
         }
 
-        graphNodeController.save(computeNodes);
-        graphNodeController.save(subnets);
+        graphNodeController.saveAll(computeNodes);
+        graphNodeController.saveAll(subnets);
 
     }
 

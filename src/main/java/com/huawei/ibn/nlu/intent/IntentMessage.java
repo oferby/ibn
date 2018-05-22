@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class IntentMessage {
 
+    private String sessionId;
     private String hint;
     private IntentStatus status;
     private String intent;
@@ -17,6 +18,14 @@ public class IntentMessage {
         this.hint = hint;
         this.status = status;
         this.intent = intent;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 
     public String getHint() {

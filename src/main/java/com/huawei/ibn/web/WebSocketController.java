@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 public class WebSocketController {
 
@@ -19,6 +21,12 @@ public class WebSocketController {
     @MessageMapping("/getIntent")
     public void getIntentRequest(IntentMessage intent) {
         logger.debug("got new intent: " + intent);
+
+        if (intent.getSessionId() == null) {
+            UUID sessionId = UUID.randomUUID();
+            intent.setSessionId(sessionId.toString());
+        }
+
         dialogEntryService.gotIntentMessgae(intent);
 
     }

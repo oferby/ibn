@@ -1,5 +1,5 @@
 var intent = {
-    hint: ''
+    hint: '',
 }
 
 function connect() {
@@ -13,7 +13,7 @@ function connect() {
             var res = JSON.parse(hint.body);
 //            if (res.status == 'DONE') {
 //            }
-
+            intent = res;
             addBotResponse(res.hint);
 
         });
@@ -49,6 +49,7 @@ function addBotResponse(text){
 $(document).ready( function(){
 
     connect();
+//    intent.sessionId = getJSessionId();
 
     $('#modal').show();
 

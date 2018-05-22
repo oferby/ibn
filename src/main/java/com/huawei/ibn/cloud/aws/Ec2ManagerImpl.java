@@ -1,4 +1,4 @@
-package com.huawei.ibn.aws;
+package com.huawei.ibn.cloud.aws;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -7,7 +7,6 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.*;
-import com.huawei.ibn.model.location.Region;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 

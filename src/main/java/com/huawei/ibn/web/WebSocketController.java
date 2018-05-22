@@ -22,10 +22,6 @@ public class WebSocketController {
     public void getIntentRequest(IntentMessage intent) {
         logger.debug("got new intent: " + intent);
 
-        if (intent.getSessionId() == null) {
-            UUID sessionId = UUID.randomUUID();
-            intent.setSessionId(sessionId.toString());
-        }
 
         dialogEntryService.gotIntentMessgae(intent);
 

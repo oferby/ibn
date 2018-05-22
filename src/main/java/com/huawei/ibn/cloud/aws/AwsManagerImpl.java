@@ -1,4 +1,4 @@
-package com.huawei.ibn.aws;
+package com.huawei.ibn.cloud.aws;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.model.*;
@@ -15,6 +15,7 @@ import com.huawei.ibn.model.virtual.ComputeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
+@Qualifier("awsCloudController")
 public class AwsManagerImpl implements CloudController {
 
     private static final Logger logger = LoggerFactory.getLogger(AwsManagerImpl.class);

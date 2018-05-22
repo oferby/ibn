@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 public class SimpleDialogEngine implements DialogEngine {
 
@@ -24,9 +26,13 @@ public class SimpleDialogEngine implements DialogEngine {
     @Override
     public IntentMessage getIntentRespose(IntentMessage intentMessage) {
 
+        if (intentMessage.getSessionId() == null) {
+            UUID sessionId = UUID.randomUUID();
+            intentMessage.setSessionId(sessionId.toString());
+        }
+
         IntentMessage response = nluEngine.getIntent(intentMessage);
 
-//        intentMessage.setHint("ECHO: " + intentMessage.getHint());
         return response;
     }
 }

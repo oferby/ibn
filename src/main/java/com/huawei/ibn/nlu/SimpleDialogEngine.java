@@ -1,6 +1,8 @@
 package com.huawei.ibn.nlu;
 
 import com.huawei.ibn.nlu.intent.IntentMessage;
+import com.huawei.ibn.nlu.model.UserInputEntity;
+import com.huawei.ibn.nlu.model.UserInputRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

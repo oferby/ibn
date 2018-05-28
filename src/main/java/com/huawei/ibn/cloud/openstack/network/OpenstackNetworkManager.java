@@ -29,6 +29,14 @@ public class OpenstackNetworkManager {
 
     }
 
+    public Network getNetwork(String projectId, String networkId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        return client.networking().network().get(networkId);
+
+    }
+
 
     public List<? extends Subnet> getSubnets(String projectId, String networkId) {
 
@@ -47,6 +55,14 @@ public class OpenstackNetworkManager {
         Network network = NeutronNetwork.builder().name(name).adminStateUp(true).build();
 
         return client.networking().network().create(network);
+
+    }
+
+    public void deleteNetwork(String projectId, String networkId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        client.networking().network().delete(networkId);
 
     }
 

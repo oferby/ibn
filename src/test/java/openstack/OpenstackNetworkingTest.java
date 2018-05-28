@@ -88,11 +88,13 @@ public class OpenstackNetworkingTest {
 
         String projectId = this.getDemoProjectId();
 
-        Optional<? extends Network> first = networkManager.getNetworkList(projectId).stream().filter(n -> n.getName().equals("network-1")).findFirst();
+        Network network = networkManager.createNetwork(projectId, "network-1");
+        String networkId = network.getId();
+        assert networkId != null;
 
-        assert first.isPresent();
-
-        String networkId = first.get().getId();
+        Subnet subnet = networkManager.createSubnet(projectId, networkId, "subnet-1", "192.168.111.0/24");
+        String subnetId = subnet.getId();
+        assert subnetId != null;
 
         Router router = networkManager.createRouter(projectId, "test-router1");
         String routerId = router.getId();
@@ -111,6 +113,9 @@ public class OpenstackNetworkingTest {
 
         assert networkManager.getPort(projectId, portId) == null;
 
+        networkManager.deleteNetwork(projectId, networkId);
+
+        assert networkManager.getNetwork(projectId, networkId) == null;
 
     }
 

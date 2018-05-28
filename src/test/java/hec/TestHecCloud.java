@@ -11,24 +11,24 @@ import org.openstack4j.model.identity.v3.Project;
 import org.openstack4j.model.identity.v3.Region;
 import org.openstack4j.openstack.OSFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.security.RunAs;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-//@PropertySource("classpath:application.properties")
-@TestPropertySource(locations="classpath:application.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 public class TestHecCloud {
 
-    @Value("${hec.user}") String user;
-    @Value("${hec.password}") String password;
-    @Value("${hec.account}") String account;
+    @Value("${hec.user}")
+    private String user;
+    @Value("${hec.password}")
+    private String password;
+    @Value("${hec.account}")
+    private String account;
 
     @Test
-    public void testConnection(){
+    public void testConnection() {
 
         OSClient.OSClientV3 os = OSFactory.builderV3()
                 .endpoint("https://iam.cn-north-1.myhuaweicloud.com/v3")
@@ -69,6 +69,33 @@ public class TestHecCloud {
 
         assert flavors != null;
 
+
+    }
+
+    @Test
+    public void testCompute() {
+
+        String region = "cn-north-1";
+        String endpoint = "ecs";
+
+//        OSClient.OSClientV3 os = OSFactory.builderV3()
+//                .endpoint("https://iam.cn-north-1.myhuaweicloud.com/v3")
+//                .credentials(user, password, Identifier.byName(account))
+//                .authenticate();
+
+//        assert os != null;
+
+        OSClient.OSClientV3 os = OSFactory.builderV3()
+//                .endpoint("https://" + endpoint + "." + region + ".myhuaweicloud.com/v3")
+                .endpoint("https://ecs.cn-north-1.myhuaweicloud.com")
+//                .token(os.getToken().getId())
+                .credentials(user, password, Identifier.byName(account))
+                .scopeToProject(Identifier.byName("cn-north-1"))
+                .authenticate();
+
+        assert os != null;
+
+        System.out.println(os.compute().servers().list());
 
     }
 

@@ -22,7 +22,6 @@ public class WebSocketController {
     public void getIntentRequest(IntentMessage intent) {
         logger.debug("got new intent: " + intent);
 
-
         dialogEntryService.gotIntentMessgae(intent);
 
     }

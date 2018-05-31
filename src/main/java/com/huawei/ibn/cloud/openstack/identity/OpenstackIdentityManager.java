@@ -27,7 +27,7 @@ public class OpenstackIdentityManager {
 
     private String unscopedToken;
 
-    public OSClient.OSClientV3 getClient() {
+    private void getClient() {
 
         OSClient.OSClientV3 osClient = OSFactory.builderV3()
                 .endpoint(identityUrl)
@@ -35,8 +35,6 @@ public class OpenstackIdentityManager {
                 .authenticate();
 
         this.unscopedToken = osClient.getToken().getId();
-
-        return osClient;
 
     }
 
@@ -48,13 +46,31 @@ public class OpenstackIdentityManager {
         return this.getClientForProject(projectId, unscopedToken);
     }
 
-    public OSClient.OSClientV3 getClientForProject(String projectId, String token) {
+    private OSClient.OSClientV3 getClientForProject(String projectId, String token) {
 
         return OSFactory.builderV3()
                 .endpoint(identityUrl)
                 .token(token)
                 .scopeToProject(Identifier.byId(projectId))
                 .authenticate();
+
+    }
+
+    public OSClient.OSClientV3 getClientForProjectName(String projectName) {
+
+        if (unscopedToken == null)
+            this.getClient();
+
+        return this.getClientForProjectName(projectName, unscopedToken);
+
+    }
+
+    private OSClient.OSClientV3 getClientForProjectName(String projectName, String token) {
+
+        String projectId = this.getProjectIdByName(projectName);
+
+        return this.getClientForProject(projectId, token);
+
 
     }
 
@@ -75,7 +91,7 @@ public class OpenstackIdentityManager {
 
     }
 
-    private ProjectListRequest sendProjectListRequest(){
+    private ProjectListRequest sendProjectListRequest() {
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -91,8 +107,6 @@ public class OpenstackIdentityManager {
         return restTemplate.exchange(identityUrl + "/auth/projects", HttpMethod.GET, entity, ProjectListRequest.class).getBody();
 
     }
-
-
 
 
 }

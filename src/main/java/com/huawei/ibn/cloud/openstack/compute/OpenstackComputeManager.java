@@ -2,11 +2,8 @@ package com.huawei.ibn.cloud.openstack.compute;
 
 import com.huawei.ibn.cloud.openstack.identity.OpenstackIdentityManager;
 import org.openstack4j.api.OSClient;
-import org.openstack4j.model.common.IdEntity;
-import org.openstack4j.model.compute.Flavor;
-import org.openstack4j.model.compute.Image;
-import org.openstack4j.model.compute.Server;
-import org.openstack4j.model.compute.ServerCreate;
+import org.openstack4j.model.common.ActionResponse;
+import org.openstack4j.model.compute.*;
 import org.openstack4j.model.compute.builder.ServerCreateBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,6 +44,71 @@ public class OpenstackComputeManager {
 
     }
 
+    public String getServerIdByName(String projectId, String serverName) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        List<? extends Server> servers = client.compute().servers().list();
+
+        Optional<? extends Server> optionalServer = servers.stream().filter(s -> s.getName().equals(serverName)).findFirst();
+
+        return optionalServer.map(Server::getId).orElse(null);
+
+    }
+
+
+    public boolean deleteServer(String projectId, String serverId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        ActionResponse response = client.compute().servers().delete(serverId);
+
+        return response.isSuccess();
+
+    }
+
+    public Addresses getServerAddresses(String projectId, String serverId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        return client.compute().servers().get(serverId).getAddresses();
+
+    }
+
+    private String getFreePublicIp(String projectId){
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        List<? extends FloatingIP> floatingIPS = client.compute().floatingIps().list();
+
+        Optional<? extends FloatingIP> optionalIp = floatingIPS.stream().filter(fip -> fip.getInstanceId() == null).findFirst();
+
+        if (optionalIp.isPresent())
+            return optionalIp.get().getFloatingIpAddress();
+
+
+        FloatingIP floatingIP = client.compute().floatingIps().allocateIP("public");
+
+        return floatingIP.getFloatingIpAddress();
+
+    }
+
+
+    public boolean setPublicIp(String projectId, String serverId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        Server server = client.compute().servers().get(serverId);
+
+        String publicIp = this.getFreePublicIp(projectId);
+
+        ActionResponse actionResponse = client.compute().floatingIps().addFloatingIP(server, publicIp);
+
+        return actionResponse.isSuccess();
+
+    }
+
+
     public String getImageIdByName(String projectId, String imageName) {
 
         OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
@@ -65,7 +127,7 @@ public class OpenstackComputeManager {
 
         List<? extends Flavor> flavors = client.compute().flavors().list();
 
-        Optional<? extends Flavor> optionalFlavor = flavors.stream().filter(f -> ((Flavor) f).getName().equals(flavorName)).findFirst();
+        Optional<? extends Flavor> optionalFlavor = flavors.stream().filter(f -> f.getName().equals(flavorName)).findFirst();
 
         return optionalFlavor.map(Flavor::getId).orElse(null);
 

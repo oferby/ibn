@@ -48,11 +48,35 @@ public class TestOpenstackCompute {
 
         Server server = computeManager.createServer("demo", params);
 
-        assert server != null;
-
+        assert server != null && server.getId() != null;
 
     }
 
+
+    @Test
+    public void addServerPublicIp() {
+
+        String projectId = getDemoProjectId();
+
+        String serverId = computeManager.getServerIdByName(projectId, "server1");
+
+        boolean result = computeManager.setPublicIp(projectId, serverId);
+
+        assert result;
+
+    }
+
+
+    @Test
+    public void testDeleteServer() {
+
+        String projectId = this.getDemoProjectId();
+
+        String serverId = computeManager.getServerIdByName(projectId, "server1");
+
+        assert computeManager.deleteServer(projectId, serverId);
+
+    }
 
     @Test
     public void testGetImage() {

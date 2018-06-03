@@ -25,7 +25,7 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestConfig.class)
 //@TestPropertySource(locations = "classpath:application.properties")
-public class OpenstackNetworkingTest {
+public class TestOpenstackNetworking {
 
     @Autowired
     private OpenstackNetworkManager networkManager;

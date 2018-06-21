@@ -33,9 +33,9 @@ public class RasaNLUEngine implements NLUEngine {
         if (rasaNluResponse != null && rasaNluResponse.getIntent() != null) {
             intent.setIntent(rasaNluResponse.getIntent().getName());
             if (rasaNluResponse.getIntent().getConfidence() > 0.5) {
-                intent.setHint("got you. you ment: " + rasaNluResponse.getIntent().getName());
+                intent.setHint("got you. you meant: " + rasaNluResponse.getIntent().getName());
             } else {
-                intent.setHint("I'm, not sure you ment: " + rasaNluResponse.getIntent().getName());
+                intent.setHint("I'm, not sure you meant: " + rasaNluResponse.getIntent().getName());
             }
         } else {
             intent.setHint("Sorry, I don't understand");

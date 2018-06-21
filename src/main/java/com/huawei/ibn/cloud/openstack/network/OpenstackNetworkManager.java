@@ -2,7 +2,6 @@ package com.huawei.ibn.cloud.openstack.network;
 
 import com.huawei.ibn.cloud.openstack.identity.OpenstackIdentityManager;
 import org.openstack4j.api.OSClient;
-import org.openstack4j.model.common.IdEntity;
 import org.openstack4j.model.network.*;
 import org.openstack4j.model.network.builder.NetSecurityGroupRuleBuilder;
 import org.openstack4j.model.network.options.PortListOptions;
@@ -56,6 +55,24 @@ public class OpenstackNetworkManager {
 
     }
 
+    public boolean addIpPool(String projectId, String subnetId, String start, String end) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+
+        Subnet subnet = client.networking().subnet().get(subnetId).toBuilder().addPool(start, end).build();
+
+        return subnet != null;
+
+    }
+
+    public List<? extends Pool> getIpPools(String projectId, String subnetId) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        return client.networking().subnet().get(subnetId).getAllocationPools();
+
+    }
 
 
     public Network createNetwork(String projectId, String name) {
@@ -63,6 +80,23 @@ public class OpenstackNetworkManager {
         OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
 
         Network network = NeutronNetwork.builder().name(name).adminStateUp(true).build();
+
+        return client.networking().network().create(network);
+
+    }
+
+    public Network createExternalNetwork(String projectId, String name) {
+
+        OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
+
+        Network network = NeutronNetwork.builder()
+                .name(name)
+                .adminStateUp(true)
+                .isRouterExternal(true)
+                .isShared(true)
+                .physicalNetwork("public")
+                .networkType(NetworkType.FLAT)
+                .build();
 
         return client.networking().network().create(network);
 
@@ -95,7 +129,7 @@ public class OpenstackNetworkManager {
 
     }
 
-    public Router getRouter(String projectId, String routerId){
+    public Router getRouter(String projectId, String routerId) {
 
         OSClient.OSClientV3 client = identityManager.getClientForProject(projectId);
 
@@ -120,7 +154,7 @@ public class OpenstackNetworkManager {
         PortListOptions portListOptions = PortListOptions.create().deviceId(routerId);
         List<? extends Port> ports = client.networking().port().list(portListOptions);
 
-        for (Port p: ports) {
+        for (Port p : ports) {
             client.networking().port().delete(p.getId());
         }
 
@@ -180,7 +214,7 @@ public class OpenstackNetworkManager {
 
     }
 
-    public SecurityGroupRule createSecurityGroupRule(String projectId, String securityGroupId, Map<String,String> params) {
+    public SecurityGroupRule createSecurityGroupRule(String projectId, String securityGroupId, Map<String, String> params) {
 
         NetSecurityGroupRuleBuilder builder = NeutronSecurityGroupRule.builder();
 
@@ -188,9 +222,9 @@ public class OpenstackNetworkManager {
         builder.ethertype(params.getOrDefault("ethertype", "IPv4"));
         builder.portRangeMin(Integer.parseInt(params.getOrDefault("portRangeMin", "0")));
         builder.portRangeMax(Integer.parseInt(params.getOrDefault("portRangeMax", "0")));
-        builder.protocol(params.getOrDefault("protocol","Any"));
-        builder.remoteGroupId(params.getOrDefault("remoteGroupId",null));
-        builder.remoteIpPrefix(params.getOrDefault("remoteIpPrefix",null));
+        builder.protocol(params.getOrDefault("protocol", "Any"));
+        builder.remoteGroupId(params.getOrDefault("remoteGroupId", null));
+        builder.remoteIpPrefix(params.getOrDefault("remoteIpPrefix", null));
         builder.securityGroupId(securityGroupId);
 
         SecurityGroupRule securityGroupRule = builder.build();

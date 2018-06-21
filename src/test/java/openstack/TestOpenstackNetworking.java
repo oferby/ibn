@@ -5,10 +5,7 @@ import com.huawei.ibn.cloud.openstack.network.OpenstackNetworkManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openstack4j.model.network.Network;
-import org.openstack4j.model.network.Port;
-import org.openstack4j.model.network.Router;
-import org.openstack4j.model.network.Subnet;
+import org.openstack4j.model.network.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +32,10 @@ public class TestOpenstackNetworking {
 
     private String getDemoProjectId() {
         return identityManager.getProjectIdByName("demo");
+    }
+
+    private String getAdminProjectId() {
+        return identityManager.getProjectIdByName("admin");
     }
 
     @Test
@@ -119,5 +120,66 @@ public class TestOpenstackNetworking {
 
     }
 
+
+    @Test
+    public void createExternalNetwork() {
+
+        String projectId = this.getAdminProjectId();
+
+        Network network = networkManager.createExternalNetwork(projectId, "public");
+
+        assert network != null && network.getId() != null;
+
+
+    }
+
+
+    @Test
+    public void deleteExternalNetwork() {
+
+        String projectId = this.getAdminProjectId();
+
+        String networkId = networkManager.getNetworkIdByName(projectId, "public");
+
+        networkManager.deleteNetwork(projectId, networkId);
+
+        networkId = networkManager.getNetworkIdByName(projectId, "public");
+
+        assert networkId == null;
+
+
+    }
+
+
+    @Test
+    public void createSubnetToExternalNetwork() {
+
+        String projectId = this.getAdminProjectId();
+
+
+
+    }
+
+
+    @Test
+    public void createIpPool() {
+
+
+        String projectId = this.getDemoProjectId();
+
+        String networkId = networkManager.getNetworkIdByName(projectId, "public");
+
+        List<? extends Subnet> subnets = networkManager.getSubnets(projectId, networkId);
+
+        String subnetId = subnets.get(0).getId();
+
+
+        List<? extends Pool> ipPools = networkManager.getIpPools(projectId, subnetId);
+
+        boolean added = networkManager.addIpPool(projectId, subnetId, "10.100.101.1", "10.100.101.100");
+
+        assert added;
+
+    }
 
 }

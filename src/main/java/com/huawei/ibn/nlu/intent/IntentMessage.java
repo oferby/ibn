@@ -2,14 +2,18 @@ package com.huawei.ibn.nlu.intent;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/*
+* Class to use to handle conversation between the dialogue server and the user
+*
+* */
 public class IntentMessage {
 
     private String sessionId;
     private String hint;
     private IntentStatus status;
     private String intent;
-    private Map<String,String> params;
+    private double confidence;
+    private Map<String,String> slots;
 
     public IntentMessage() {
     }
@@ -52,27 +56,34 @@ public class IntentMessage {
         this.intent = intent;
     }
 
-    public Map<String, String> getParams() {
-        return params;
+    public Map<String, String> getSlots() {
+        return slots;
     }
 
-    public String getParamValue(String key){
-        if (params==null){
+    public String getSlotValue(String key){
+        if (slots ==null){
             return null;
         }
 
-        return params.get(key);
+        return slots.get(key);
     }
 
-
-    public void setParams(Map<String, String> params) {
-        this.params = params;
+    public double getConfidence() {
+        return confidence;
     }
 
-    public void addParam(String key, String value){
-        if (params==null){
-            params = new HashMap<>();
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+
+    public void setSlots(Map<String, String> slots) {
+        this.slots = slots;
+    }
+
+    public void addSlot(String key, String value){
+        if (slots ==null){
+            slots = new HashMap<>();
         }
-        params.put(key, value);
+        slots.put(key, value);
     }
 }

@@ -30,8 +30,8 @@ function disconnect() {
 
 function sendIntent(userInput){
     intent.hint = userInput;
-    console.log('Sending intent to server');
-    stompClient.send("/app/getIntent", {}, JSON.stringify(intent));
+    console.log('Sending user input to server');
+    stompClient.send("/app/parseDialogue", {}, JSON.stringify(intent));
 }
 
 function addUserInput(text) {

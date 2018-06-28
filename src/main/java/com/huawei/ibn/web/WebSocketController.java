@@ -1,29 +1,43 @@
 package com.huawei.ibn.web;
 
-import com.huawei.ibn.nlu.intent.IntentMessage;
-import com.huawei.ibn.service.DialogEntryService;
+import com.huawei.ibn.message.Dialogue;
+import com.huawei.ibn.service.DialogueEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.util.UUID;
-
+/*
+* This class is a starting point for user input that comes from web socket.
+* Different channels can exist to send user inputs to the dialogue
+* engine.
+*
+* */
 @Controller
 public class WebSocketController {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketController.class);
 
     @Autowired
-    private DialogEntryService dialogEntryService;
+    private DialogueEngine dialogueEngine;
 
-    @MessageMapping("/getIntent")
-    public void getIntentRequest(IntentMessage intent) {
-        logger.debug("got new intent: " + intent);
+    @Autowired
+    private SimpMessagingTemplate template;
 
-        dialogEntryService.gotIntentMessgae(intent);
+    @MessageMapping("/parseDialogue")
+    public void getIntentRequest(Dialogue dialogue) {
 
+        logger.debug("got new user input: " + dialogue.getText());
+
+        Dialogue dialogueResponse = dialogueEngine.getDialogueResponse(dialogue);
+        this.sendResponse(dialogueResponse);
+
+    }
+
+    private void sendResponse(Dialogue dialogueResponse) {
+        template.convertAndSend("/topic/dialogue", dialogueResponse);
     }
 
 }

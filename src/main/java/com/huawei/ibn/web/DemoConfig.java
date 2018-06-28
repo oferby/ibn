@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller;
 import java.text.DecimalFormat;
 import java.util.*;
 
-@Controller
+//@Controller
 class DemoConfig {
 
     @Autowired

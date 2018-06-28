@@ -132,6 +132,13 @@
             <version>1.9.2</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.webjars/angularjs -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>angularjs</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
 
         <!-- AWS -->
         <dependency>
@@ -153,6 +160,21 @@
             <artifactId>openstack4j</artifactId>
             <version>3.1.1-SNAPSHOT</version>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>jsmile</groupId>-->
+            <!--<artifactId>jsmile</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.github.lucarosellini.rJava/JRI -->
+
+        <dependency>
+            <groupId>com.github.lucarosellini.rJava</groupId>
+            <artifactId>JRI</artifactId>
+            <version>0.9-7</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
